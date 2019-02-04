@@ -97,7 +97,7 @@ class SearchXMLCommand(Frame):
         self.pack()
         scroll_widget = self.createScrollTextWidget()
         self.createTextEntryWidget()
-        #self.main(scroll_widget)
+        self.main(scroll_widget)
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):

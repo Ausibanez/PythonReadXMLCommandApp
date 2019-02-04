@@ -1,7 +1,12 @@
 import SearchXMLCommand
+from tkinter import filedialog
+from tkinter import *
+from tkinter import messagebox
+from tkinter import scrolledtext
 
-def main(self, scroll_widget):
-    xml_file_name = self.choose_xml_file()
+def main():
+    SearchXML = SearchXMLCommand()
+    xml_file_name = SearchXMLCommand.choose_xml_file()
 
     if xml_file_name:
         scroll_widget.insert('insert', 'XMLCommand file is ' + xml_file_name + '\n')
@@ -28,10 +33,15 @@ def main(self, scroll_widget):
     else:
         scroll_widget.insert('insert', "Invalid XML file name\n")
 
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        root.destroy()
+        sys.exit()
+
 root = Tk()
 root.geometry('900x200')
 root.title("Search XMLCommand")
-app = self.main(scroll_widget)
+app = main()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
 root.destroy()
