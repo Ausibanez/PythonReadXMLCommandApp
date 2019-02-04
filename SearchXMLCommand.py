@@ -90,23 +90,9 @@ class SearchXMLCommand(Frame):
         row.pack(side=TOP, fill=X, padx=5, pady=5)
         tagName.pack(side=RIGHT, expand=YES, fill=X)
 
-
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         scroll_widget = self.createScrollTextWidget()
         self.createTextEntryWidget()
         self.main(scroll_widget)
-
-def on_closing():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        root.destroy()
-        sys.exit()
-
-# root = Tk()
-# root.geometry('900x200')
-# root.title("Search XMLCommand")
-# app = SearchXMLCommand(master=root)
-# root.protocol("WM_DELETE_WINDOW", on_closing)
-# app.mainloop()
-# root.destroy()
