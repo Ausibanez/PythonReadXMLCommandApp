@@ -10,7 +10,6 @@
 import xml.etree.ElementTree as ET
 from tkinter import filedialog
 from tkinter import *
-from tkinter import messagebox
 from tkinter import scrolledtext
 import os
 
@@ -104,10 +103,10 @@ def on_closing():
         root.destroy()
         sys.exit()
 
-root = Tk()
-root.geometry('900x200')
-root.title("Search XMLCommand")
-app = SearchXMLCommand(master=root)
-root.protocol("WM_DELETE_WINDOW", on_closing)
-app.mainloop()
-root.destroy()
+# root = Tk()
+# root.geometry('900x200')
+# root.title("Search XMLCommand")
+# app = SearchXMLCommand(master=root)
+# root.protocol("WM_DELETE_WINDOW", on_closing)
+# app.mainloop()
+# root.destroy()
