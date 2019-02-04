@@ -49,9 +49,9 @@ class SearchXMLCommand(Frame):
             if line:
                 yield line
 
-    def main(self, scroll_widget):
+    def main(self, scroll_widget, xml_tag):
         xml_file_name = self.choose_xml_file()
-
+        #scroll_widget.insert('insert', 'xml_tag is ' + xml_tag.get() + '\n')
         if xml_file_name:
             scroll_widget.insert('insert', 'XMLCommand file is ' + xml_file_name + '\n')
             try:
@@ -89,10 +89,11 @@ class SearchXMLCommand(Frame):
         tagName.insert(0,"<tag name>")
         row.pack(side=TOP, fill=X, padx=5, pady=5)
         tagName.pack(side=RIGHT, expand=YES, fill=X)
+        return tagName
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         scroll_widget = self.createScrollTextWidget()
-        self.createTextEntryWidget()
-        self.main(scroll_widget)
+        xml_tag = self.createTextEntryWidget()
+        self.main(scroll_widget, xml_tag)
