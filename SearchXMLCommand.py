@@ -57,7 +57,7 @@ class SearchXMLCommand(Frame):
             if line:
                 yield line
 
-    def main(self, scroll_widget, xml_tag):
+    def main(self, scroll_widget, xml_tag, txtOutput):
         xml_file_name = self.choose_xml_file()
 
         if xml_file_name:
@@ -104,17 +104,25 @@ class SearchXMLCommand(Frame):
         textBox.configure(state=DISABLED)
         return textBox
 
+    def createButtonWidget(self, scroll, xml_tag, txtOutput, frame):
+        w = Button(frame, text="Open...", command=lambda: self.main(scroll, xml_tag, txtOutput))
+        w.grid(row=0, column=0, sticky='w', padx=2, pady=2)
+
     # Create a tk entry. Input: frame
-    def createTextEntryWidget(self, frame):
+    def createXMLTagEntry(self, frame):
         frame.grid_columnconfigure(0, weight=0)
         tagName = Entry(frame)
         tagName.insert(0,"primary")
         tagName.grid(row=0, column=1, sticky='w', padx=10, pady=2)
         return tagName
 
-    def createButtonWidget(self, scroll, xml_tag, frame):
-        w = Button(frame, text="Open...", command=lambda: self.main(scroll, xml_tag))
-        w.grid(row=0, column=0, sticky='w', padx=2, pady=2)
+    def createFormattedOutputEntry(self, frame):
+        frame.grid_columnconfigure(2, weight=1)
+        outText = Entry(frame)
+        outText.config(width=100)
+        outText.insert(0,"insert into gasQualityDefine_5feb2019 select")
+        outText.grid(row=0, column=2, sticky='w', padx=2, pady=2)
+        return outText
 
     # Delete all text in the scolledText widget
     def clearText(self, scroll):
@@ -123,16 +131,17 @@ class SearchXMLCommand(Frame):
         scroll.configure(state=DISABLED)
 
     def createClearButton(self, scroll, frame):
-        frame.grid_columnconfigure(2, weight=1)
+        frame.grid_columnconfigure(3, weight=1)
         w = Button(frame, text="Clear", command=lambda: self.clearText(scroll))
-        w.grid(row=0, column=2, sticky='e', padx=2, pady=2)
+        w.grid(row=0, column=3, sticky='e', padx=2, pady=2)
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         frameBottom = self.createFrame(BOTTOM, 885, 190)
-        text_box = self.createScrollbarTextWidget(frameBottom)
+        scrolltxt = self.createScrollbarTextWidget(frameBottom)
         frameTOP = self.createFrame(TOP, 100, 50)
-        xml_tag = self.createTextEntryWidget(frameTOP)
-        self.createButtonWidget(text_box, xml_tag, frameTOP)
-        self.createClearButton(text_box, frameTOP)
+        xml_tag = self.createXMLTagEntry(frameTOP)
+        txtOutput = self.createFormattedOutputEntry(frameTOP)
+        self.createButtonWidget(scrolltxt, xml_tag, txtOutput, frameTOP)
+        self.createClearButton(scrolltxt, frameTOP)
