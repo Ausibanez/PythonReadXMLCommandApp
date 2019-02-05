@@ -15,6 +15,17 @@ import os
 
 class SearchXMLCommand(Frame):
 
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.pack()
+        frameBottom = self.createFrame(BOTTOM, 885, 190)
+        scrolltxt = self.createScrollbarTextWidget(frameBottom)
+        frameTOP = self.createFrame(TOP, 100, 50)
+        xml_tag = self.createXMLTagEntry(frameTOP)
+        txtOutput = self.createFormattedOutputEntry(frameTOP)
+        self.createButtonWidget(scrolltxt, xml_tag, txtOutput, frameTOP)
+        self.createClearButton(scrolltxt, frameTOP)
+
     # Opens dialog box for user to select an XML file containing a series of XMLCommand values
     def choose_xml_file(self):
         current_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -117,8 +128,14 @@ class SearchXMLCommand(Frame):
         return tagName
 
     def createFormattedOutputEntry(self, frame):
+        def setCharLimit(*args):
+            value = outputStr.get()
+            if len(value) > 200: outputStr.set(value[:200])
+
+        outputStr = StringVar()
+        outputStr.trace('w', setCharLimit)
         frame.grid_columnconfigure(2, weight=1)
-        outText = Entry(frame)
+        outText = Entry(frame, textvariable=outputStr)
         outText.config(width=100)
         outText.insert(0,"insert into gasQualityDefine_5feb2019 select")
         outText.grid(row=0, column=2, sticky='w', padx=2, pady=2)
@@ -134,14 +151,3 @@ class SearchXMLCommand(Frame):
         frame.grid_columnconfigure(3, weight=1)
         w = Button(frame, text="Clear", command=lambda: self.clearText(scroll))
         w.grid(row=0, column=3, sticky='e', padx=2, pady=2)
-
-    def __init__(self, master=None):
-        Frame.__init__(self, master)
-        self.pack()
-        frameBottom = self.createFrame(BOTTOM, 885, 190)
-        scrolltxt = self.createScrollbarTextWidget(frameBottom)
-        frameTOP = self.createFrame(TOP, 100, 50)
-        xml_tag = self.createXMLTagEntry(frameTOP)
-        txtOutput = self.createFormattedOutputEntry(frameTOP)
-        self.createButtonWidget(scrolltxt, xml_tag, txtOutput, frameTOP)
-        self.createClearButton(scrolltxt, frameTOP)
