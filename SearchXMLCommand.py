@@ -93,7 +93,7 @@ class SearchXMLCommand(Frame):
 
     def createButtonWidget(self, scroll, xml_tag):
         row = Frame(self)
-        w = Button(row, text = "Open...", command = self.main(scroll, xml_tag))
+        w = Button(row, text="Open...", command=lambda: self.main(scroll, xml_tag))
         row.pack(side=TOP, fill=X, padx=5, pady=5)
         w.pack(side=LEFT, padx=5, pady=5)
         row.pack()
