@@ -51,9 +51,10 @@ class SearchXMLCommand(Frame):
 
     def main(self, scroll_widget, xml_tag):
         xml_file_name = self.choose_xml_file()
-        scroll_widget.insert('insert', 'Retrieving values for tag: ' + xml_tag.get() + '\n')
+
         if xml_file_name:
             scroll_widget.insert('insert', 'XMLCommand file is ' + xml_file_name + '\n')
+            scroll_widget.insert('insert', 'Retrieving values for tag: ' + xml_tag.get() + '\n')
             try:
                 with open(xml_file_name) as inFile:
                     output_file_name = self.choose_save_file()
@@ -91,26 +92,26 @@ class SearchXMLCommand(Frame):
         textBox.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
         scroll_bar = Scrollbar(frame, command=textBox.yview)
         scroll_bar.grid(row=0, column=1, sticky='nsew')
-        #scroll_bar.pack(fill=Y, side=RIGHT)
         textBox['yscrollcommand'] = scroll_bar.set
         return textBox
 
     # Create a tk entry. Input: frame
     def createTextEntryWidget(self, frame):
+        frame.grid_columnconfigure(0, weight=0)
         tagName = Entry(frame)
         tagName.insert(0,"primary")
-        tagName.pack(side=RIGHT, expand=YES)
+        tagName.grid(row=0, column=1, sticky='w', padx=10, pady=2)
         return tagName
 
     def createButtonWidget(self, scroll, xml_tag, topRow):
         w = Button(topRow, text="Open...", command=lambda: self.main(scroll, xml_tag))
-        w.pack(side=LEFT, padx=5, pady=5)
+        w.grid(row=0, column=0, sticky='w', padx=2, pady=2)
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
-        frameBottom = self.createFrame(BOTTOM, 885, 150)
+        frameBottom = self.createFrame(BOTTOM, 885, 190)
         text_box = self.createScrollbarTextWidget(frameBottom)
-        frameTOP = self.createFrame(TOP, 100, 10)
+        frameTOP = self.createFrame(TOP, 100, 50)
         xml_tag = self.createTextEntryWidget(frameTOP)
         self.createButtonWidget(text_box, xml_tag, frameTOP)
