@@ -88,11 +88,12 @@ class SearchXMLCommand(Frame):
 
     # Setup scrolled text widget for message logging
     def createScrollbarTextWidget(self, frame):
-        textBox = Text(frame, borderwidth=3, relief="sunken")
+        textBox = scrolledtext.ScrolledText(frame)
+        #textBox = Text(frame, borderwidth=3, relief="sunken")
         textBox.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
-        scroll_bar = Scrollbar(frame, command=textBox.yview)
-        scroll_bar.grid(row=0, column=1, sticky='nsew')
-        textBox['yscrollcommand'] = scroll_bar.set
+        #scroll_bar = Scrollbar(frame, command=textBox.yview)
+        #scroll_bar.grid(row=0, column=1, sticky='nsew')
+        #textBox['yscrollcommand'] = scroll_bar.set
         return textBox
 
     # Create a tk entry. Input: frame
