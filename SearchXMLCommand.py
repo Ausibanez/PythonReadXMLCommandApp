@@ -32,14 +32,22 @@ class SearchXMLCommand(Frame):
                                                 filetypes = (("text files","*.txt"),("all files","*.*")),
                                                 title = 'Save results to file')
 
-    def logError(self, scroll_widget, msg):
-        scroll_widget.insert('insert', msg, 'error')
-        scroll_widget.tag_config('error', foreground='red')
+    def logError(self, scroll, msg):
+        scroll.configure(state=NORMAL)
+        scroll.insert('end', msg, 'error')
+        scroll.tag_config('error', foreground='red')
+        scroll.configure(state=DISABLED)
 
-    def logGood(self, scroll_widget, msg):
-        scroll_widget.insert('insert', msg, 'good')
-        scroll_widget.tag_config('good', foreground='green')
+    def logGood(self, scroll, msg):
+        scroll.configure(state=NORMAL)
+        scroll.insert('end', msg, 'good')
+        scroll.tag_config('good', foreground='green')
+        scroll.configure(state=DISABLED)
 
+    def logInfo(self, scroll, msg):
+        scroll.configure(state=NORMAL)
+        scroll.insert('end', msg)
+        scroll.configure(state=DISABLED)
 
     # Read file line by line stripping trailing white space
     # and returning only non-blank lines
@@ -53,14 +61,14 @@ class SearchXMLCommand(Frame):
         xml_file_name = self.choose_xml_file()
 
         if xml_file_name:
-            scroll_widget.insert('insert', 'XMLCommand file is ' + xml_file_name + '\n')
-            scroll_widget.insert('insert', 'Retrieving values for tag: ' + xml_tag.get() + '\n')
+            self.logInfo(scroll_widget, 'XMLCommand file is ' + xml_file_name + '\n')
+            self.logInfo(scroll_widget, 'Retrieving values for tag: ' + xml_tag.get() + '\n')
             try:
                 with open(xml_file_name) as inFile:
                     output_file_name = self.choose_save_file()
 
                     if output_file_name:
-                        scroll_widget.insert('insert', 'Output file is ' + output_file_name + '\n')
+                        self.logInfo(scroll_widget, 'Output file is ' + output_file_name + '\n')
                         with open(output_file_name, "w") as outFile:
                             for line in self.read_nonblank_lines(inFile):
                                 tree = ET.ElementTree(ET.fromstring(line))
@@ -69,12 +77,12 @@ class SearchXMLCommand(Frame):
                                 outFile.write("insert into gasQualityDefine_21aug2018 select '" + objectname.text + "'\n")
                             self.logGood(scroll_widget, 'Done\n')
                     else:
-                        scroll_widget.insert('insert', "Invalid output file name\n")
+                        scroll_widget.insert('end', 'Invalid output file name\n')
             except Exception as e:
                 msg = 'Unable to process xml: ' + str(e) + '\n'
                 self.logError(scroll_widget, msg)
         else:
-            scroll_widget.insert('insert', "Invalid XML file name\n")
+            self.logError(scroll_widget, 'Invalid XML file name\n')
 
     # Create a tk frame
     # Inputs: side, width, height
@@ -89,11 +97,8 @@ class SearchXMLCommand(Frame):
     # Setup scrolled text widget for message logging
     def createScrollbarTextWidget(self, frame):
         textBox = scrolledtext.ScrolledText(frame)
-        #textBox = Text(frame, borderwidth=3, relief="sunken")
         textBox.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
-        #scroll_bar = Scrollbar(frame, command=textBox.yview)
-        #scroll_bar.grid(row=0, column=1, sticky='nsew')
-        #textBox['yscrollcommand'] = scroll_bar.set
+        textBox.configure(state=DISABLED)
         return textBox
 
     # Create a tk entry. Input: frame
