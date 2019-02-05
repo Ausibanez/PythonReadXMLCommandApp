@@ -62,25 +62,28 @@ class SearchXMLCommand(Frame):
 
         if xml_file_name:
             self.logInfo(scroll_widget, 'XMLCommand file is ' + xml_file_name + '\n')
-            self.logInfo(scroll_widget, 'Retrieving values for tag: ' + xml_tag.get() + '\n')
-            try:
-                with open(xml_file_name) as inFile:
-                    output_file_name = self.choose_save_file()
+            if xml_tag.get():
+                self.logInfo(scroll_widget, 'Retrieving values for tag: ' + xml_tag.get() + '\n')
+                try:
+                    with open(xml_file_name) as inFile:
+                        output_file_name = self.choose_save_file()
 
-                    if output_file_name:
-                        self.logInfo(scroll_widget, 'Output file is ' + output_file_name + '\n')
-                        with open(output_file_name, "w") as outFile:
-                            for line in self.read_nonblank_lines(inFile):
-                                tree = ET.ElementTree(ET.fromstring(line))
-                                objectname = tree.find(xml_tag.get())
-                                # Hard-coded output format. Should make this configurable
-                                outFile.write("insert into gasQualityDefine_21aug2018 select '" + objectname.text + "'\n")
-                            self.logGood(scroll_widget, 'Done\n')
-                    else:
-                        scroll_widget.insert('end', 'Invalid output file name\n')
-            except Exception as e:
-                msg = 'Unable to process xml: ' + str(e) + '\n'
-                self.logError(scroll_widget, msg)
+                        if output_file_name:
+                            self.logInfo(scroll_widget, 'Output file is ' + output_file_name + '\n')
+                            with open(output_file_name, "w") as outFile:
+                                for line in self.read_nonblank_lines(inFile):
+                                    tree = ET.ElementTree(ET.fromstring(line))
+                                    objectname = tree.find(xml_tag.get())
+                                    # Hard-coded output format. Should make this configurable
+                                    outFile.write("insert into gasQualityDefine_21aug2018 select '" + objectname.text + "'\n")
+                                self.logGood(scroll_widget, 'Done\n')
+                        else:
+                            self.logError(scroll_widget, 'Invalid output file name\n')
+                except Exception as e:
+                    msg = 'Unable to process xml: ' + str(e) + '\n'
+                    self.logError(scroll_widget, msg)
+            else:
+                self.logError(scroll_widget, 'Invalid XML tag\n')
         else:
             self.logError(scroll_widget, 'Invalid XML file name\n')
 
@@ -113,6 +116,7 @@ class SearchXMLCommand(Frame):
         w = Button(frame, text="Open...", command=lambda: self.main(scroll, xml_tag))
         w.grid(row=0, column=0, sticky='w', padx=2, pady=2)
 
+    # Delete all text in the scolledText widget
     def clearText(self, scroll):
         scroll.configure(state=NORMAL)
         scroll.delete('1.0', END)
