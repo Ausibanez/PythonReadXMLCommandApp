@@ -109,9 +109,19 @@ class SearchXMLCommand(Frame):
         tagName.grid(row=0, column=1, sticky='w', padx=10, pady=2)
         return tagName
 
-    def createButtonWidget(self, scroll, xml_tag, topRow):
-        w = Button(topRow, text="Open...", command=lambda: self.main(scroll, xml_tag))
+    def createButtonWidget(self, scroll, xml_tag, frame):
+        w = Button(frame, text="Open...", command=lambda: self.main(scroll, xml_tag))
         w.grid(row=0, column=0, sticky='w', padx=2, pady=2)
+
+    def clearText(self, scroll):
+        scroll.configure(state=NORMAL)
+        scroll.delete('1.0', END)
+        scroll.configure(state=DISABLED)
+
+    def createClearButton(self, scroll, frame):
+        frame.grid_columnconfigure(2, weight=1)
+        w = Button(frame, text="Clear", command=lambda: self.clearText(scroll))
+        w.grid(row=0, column=2, sticky='e', padx=2, pady=2)
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
@@ -121,3 +131,4 @@ class SearchXMLCommand(Frame):
         frameTOP = self.createFrame(TOP, 100, 50)
         xml_tag = self.createTextEntryWidget(frameTOP)
         self.createButtonWidget(text_box, xml_tag, frameTOP)
+        self.createClearButton(text_box, frameTOP)
