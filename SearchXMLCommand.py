@@ -51,7 +51,7 @@ class SearchXMLCommand(Frame):
 
     def main(self, scroll_widget, xml_tag):
         xml_file_name = self.choose_xml_file()
-        #scroll_widget.insert('insert', 'xml_tag is ' + xml_tag.get() + '\n')
+        scroll_widget.insert('insert', 'Retrieving values for tag: ' + xml_tag.get() + '\n')
         if xml_file_name:
             scroll_widget.insert('insert', 'XMLCommand file is ' + xml_file_name + '\n')
             try:
@@ -63,9 +63,7 @@ class SearchXMLCommand(Frame):
                         with open(output_file_name, "w") as outFile:
                             for line in self.read_nonblank_lines(inFile):
                                 tree = ET.ElementTree(ET.fromstring(line))
-                                # Hard-coded to look at "primary" xml tag
-                                # Should re-write to allow user to choose tag (perhaps out of a list of available tags)
-                                objectname = tree.find('primary')
+                                objectname = tree.find(xml_tag.get())
                                 # Hard-coded output format. Should make this configurable
                                 outFile.write("insert into gasQualityDefine_21aug2018 select '" + objectname.text + "'\n")
                             self.logGood(scroll_widget, 'Done\n')
@@ -77,31 +75,38 @@ class SearchXMLCommand(Frame):
         else:
             scroll_widget.insert('insert', "Invalid XML file name\n")
 
-    # Setup scrolled text widget for message logging
-    def createScrollTextWidget(self):
-        log = scrolledtext.ScrolledText()
-        log.pack(fill=X, expand=True, padx=8, pady=8, side=BOTTOM)
-        return log
+    def createFrame(self, Pos, W, H):
+        frame = Frame(self, width=W, height=H)
+        frame.pack(fill="both", expand=True, side=Pos)
+        frame.grid_propagate(False)
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+        return frame
 
-    def createTextEntryWidget(self):
-        row = Frame(self)
-        tagName = Entry(row)
-        tagName.insert(0,"<tag name>")
-        row.pack(side=TOP, fill=X, padx=5, pady=5)
+    # Setup scrolled text widget for message logging
+    def createScrollbarTextWidget(self, frame):
+        textBox = Text(frame, borderwidth=3, relief="sunken")
+        textBox.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
+        scroll_bar = Scrollbar(frame, command=textBox.yview)
+        #scroll_bar.pack(fill=Y, side=RIGHT)
+        textBox['yscrollcommand'] = scroll_bar.set
+        return textBox
+
+    def createTextEntryWidget(self, topRow):
+        tagName = Entry(topRow)
+        tagName.insert(0,"primary")
         tagName.pack(side=RIGHT, expand=YES, fill=X)
         return tagName
 
-    def createButtonWidget(self, scroll, xml_tag):
-        row = Frame(self)
-        w = Button(row, text="Open...", command=lambda: self.main(scroll, xml_tag))
-        row.pack(side=TOP, fill=X, padx=5, pady=5)
+    def createButtonWidget(self, scroll, xml_tag, topRow):
+        w = Button(topRow, text="Open...", command=lambda: self.main(scroll, xml_tag))
         w.pack(side=LEFT, padx=5, pady=5)
-        row.pack()
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
-        scroll_widget = self.createScrollTextWidget()
-        xml_tag = self.createTextEntryWidget()
-        self.createButtonWidget(scroll_widget, xml_tag)
-        #self.main(scroll_widget, xml_tag)
+        frameBottom = self.createFrame(BOTTOM, 875, 50)
+        text_box = self.createScrollbarTextWidget(frameBottom)
+        frameTOP = self.createFrame(TOP, 800, 10)
+        xml_tag = self.createTextEntryWidget(frameTOP)
+        self.createButtonWidget(text_box, xml_tag, frameTOP)
