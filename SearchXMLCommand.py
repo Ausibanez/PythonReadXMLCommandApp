@@ -91,9 +91,17 @@ class SearchXMLCommand(Frame):
         tagName.pack(side=RIGHT, expand=YES, fill=X)
         return tagName
 
+    def createButtonWidget(self, scroll, xml_tag):
+        row = Frame(self)
+        w = Button(row, text = "Open...", command = self.main(scroll, xml_tag))
+        row.pack(side=TOP, fill=X, padx=5, pady=5)
+        w.pack(side=LEFT, padx=5, pady=5)
+        row.pack()
+
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         scroll_widget = self.createScrollTextWidget()
         xml_tag = self.createTextEntryWidget()
-        self.main(scroll_widget, xml_tag)
+        self.createButtonWidget(scroll_widget, xml_tag)
+        #self.main(scroll_widget, xml_tag)
