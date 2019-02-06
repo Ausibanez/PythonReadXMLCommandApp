@@ -14,15 +14,17 @@ from tkinter import *
 from tkinter import scrolledtext
 import os
 
-class SearchXMLCommand(Frame):
+class SearchXMLCommand:
 
-    def __init__(self, master):
-        Frame.__init__(self, master)
-        self.grid(row=0, column=0)
-        frameBottom = Frame(master)
-        frameBottom.grid(row=1, column=0, padx=10, pady=10, sticky=E+W+N+S)
-        frameTop = Frame(master)
+    def __init__(self, parent):
+        frameTop = Frame(parent)
         frameTop.grid(row=0, column=0, sticky=E+W)
+        frameBottom = Frame(parent)
+        frameBottom.grid(row=1, column=0, padx=10, pady=10, sticky=W+E+N+S)
+        parent.columnconfigure(0, weight=1)
+        parent.rowconfigure(1, weight=1)
+        frameBottom.rowconfigure(0, weight=1)
+        frameBottom.columnconfigure(0, weight=1)
         scrolltxt = self.createScrolledText(frameBottom)
         xml_tag = self.createXMLTagEntry(frameTop)
         txtOutput = self.createFormattedOutputEntry(frameTop)
