@@ -8,7 +8,6 @@
 ##<commandrequest><primary>828411-01</primary>##<secondary>Run<value>1</value></secondary>
 ##<index>16</index><starttime>2018-08-16 14:00:00</starttime>##<runtime>59.98333358764648</runtime>
 ##<timestamp>1534446000</timestamp>##<offset>-300</offset></commandrequest>
-
 import xml.etree.ElementTree as ET
 from tkinter import filedialog
 from tkinter import *
@@ -17,16 +16,18 @@ import os
 
 class SearchXMLCommand(Frame):
 
-    def __init__(self, master=None):
+    def __init__(self, master):
         Frame.__init__(self, master)
-        self.pack()
-        frameBottom = self.createFrame(BOTTOM, 885, 190)
-        scrolltxt = self.createScrollbarTextWidget(frameBottom)
-        frameTOP = self.createFrame(TOP, 100, 50)
-        xml_tag = self.createXMLTagEntry(frameTOP)
-        txtOutput = self.createFormattedOutputEntry(frameTOP)
-        self.createButtonWidget(scrolltxt, xml_tag, txtOutput, frameTOP)
-        self.createClearButton(scrolltxt, frameTOP)
+        self.grid(row=0, column=0)
+        frameBottom = Frame(master)
+        frameBottom.grid(row=1, column=0, padx=10, pady=10, sticky=E+W+N+S)
+        frameTop = Frame(master)
+        frameTop.grid(row=0, column=0, sticky=E+W)
+        scrolltxt = self.createScrolledText(frameBottom)
+        xml_tag = self.createXMLTagEntry(frameTop)
+        txtOutput = self.createFormattedOutputEntry(frameTop)
+        self.creatOpenButton(scrolltxt, xml_tag, txtOutput, frameTop)
+        self.createClearButton(scrolltxt, frameTop)
 
     # Opens dialog box for user to select an XML file containing a series of XMLCommand values
     def choose_xml_file(self):
@@ -120,33 +121,22 @@ class SearchXMLCommand(Frame):
         else:
             self.logError(scroll_widget, 'Invalid XML file name\n')
 
-    # Create a tk frame
-    # Inputs: side, width, height
-    def createFrame(self, Pos, W, H):
-        frame = Frame(self, width=W, height=H)
-        frame.pack(fill="both", expand=True, side=Pos)
-        frame.grid_propagate(False)
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
-        return frame
-
     # Setup scrolled text widget for message logging
-    def createScrollbarTextWidget(self, frame):
-        textBox = scrolledtext.ScrolledText(frame)
-        textBox.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
+    def createScrolledText(self, frame):
+        textBox = scrolledtext.ScrolledText(frame, width=110, height=15)
+        textBox.grid(row=0, column=0, sticky=E+W+N+S)
         textBox.configure(state=DISABLED)
         return textBox
 
-    def createButtonWidget(self, scroll, xml_tag, txtOutput, frame):
-        w = Button(frame, text="Open...", command=lambda: self.main(scroll, xml_tag, txtOutput))
-        w.grid(row=0, column=0, sticky='w', padx=2, pady=2)
+    def creatOpenButton(self, scroll, xml_tag, txtOutput, frame):
+        btn_open = Button(frame, text="Open...", command=lambda: self.main(scroll, xml_tag, txtOutput))
+        btn_open.grid(row=0, column=0, padx=10, pady=10)
 
     # Create a tk entry. Input: frame
     def createXMLTagEntry(self, frame):
-        frame.grid_columnconfigure(0, weight=0)
         tagName = Entry(frame)
         tagName.insert(0,"primary")
-        tagName.grid(row=0, column=1, sticky='w', padx=10, pady=2)
+        tagName.grid(row=0, column=1)
         return tagName
 
     def createFormattedOutputEntry(self, frame):
@@ -156,11 +146,10 @@ class SearchXMLCommand(Frame):
 
         outputStr = StringVar()
         outputStr.trace('w', setCharLimit)
-        frame.grid_columnconfigure(2, weight=1)
         outText = Entry(frame, textvariable=outputStr)
         outText.config(width=100)
         outText.insert(0,"The xml tag value is {#}")
-        outText.grid(row=0, column=2, sticky='w', padx=2, pady=2)
+        outText.grid(row=0, column=2, padx=10, pady=10)
         return outText
 
     # Delete all text in the scolledText widget
@@ -170,6 +159,5 @@ class SearchXMLCommand(Frame):
         scroll.configure(state=DISABLED)
 
     def createClearButton(self, scroll, frame):
-        frame.grid_columnconfigure(3, weight=1)
-        w = Button(frame, text="Clear log", command=lambda: self.clearText(scroll))
-        w.grid(row=0, column=3, sticky='e', padx=2, pady=2)
+        btn_clear = Button(frame, text="Clear log", command=lambda: self.clearText(scroll))
+        btn_clear.grid(row=0, column=3, padx=10, pady=10)

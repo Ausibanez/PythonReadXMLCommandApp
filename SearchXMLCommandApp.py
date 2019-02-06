@@ -8,9 +8,9 @@ def on_closing():
         sys.exit()
 
 root = Tk()
-root.geometry('900x250')
+#root.geometry('900x250')
 root.title("Search DPP XMLCommand")
-app = SearchXMLCommand(master=root)
+app = SearchXMLCommand(root)
 root.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
 root.destroy()
