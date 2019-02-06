@@ -112,9 +112,13 @@ class SearchXMLCommand:
                                 with open(output_file_name, "w") as outFile:
                                     for line in self.read_nonblank_lines(inFile):
                                         tree = ET.ElementTree(ET.fromstring(line))
-                                        objectname = tree.find(xml_tag.get())
-                                        if objectname is not None:
-                                            outFile.write(strList[0] + objectname.text + strList[1] + '\n')
+                                        values = ""
+                                        for tag in tree.findall(xml_tag.get()):
+                                            for node in tag.getiterator():
+                                                values = values + node.text + ' '
+                                        #objectname = tree.find(xml_tag.get())
+                                        if values is not None:
+                                            outFile.write(strList[0] + values + strList[1] + '\n')
                                     self.logGood(scroll_widget, 'Done\n')
                         else:
                             self.logError(scroll_widget, 'Invalid output file name\n')
@@ -128,7 +132,7 @@ class SearchXMLCommand:
 
     # Setup scrolled text widget for message logging
     def createScrolledText(self, frame):
-        textBox = scrolledtext.ScrolledText(frame, width=110, height=15)
+        textBox = scrolledtext.ScrolledText(frame, width=105, height=15)
         textBox.grid(row=0, column=0, sticky=E+W+N+S)
         textBox.configure(state=DISABLED)
         return textBox
