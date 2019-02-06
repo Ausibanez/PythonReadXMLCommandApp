@@ -85,7 +85,7 @@ class SearchXMLCommand(Frame):
         except Exception as e:
             msg = 'Error in output text: ' + str(e) + '\n'
             self.logError(scroll_widget, msg)
-            self.logError(scroll_widget, 'Verify the {0} token is included'
+            self.logError(scroll_widget, 'Verify the {#} token is included'
                 + ' as this is used to set the location of the attribute value'
                 + ' in the output')
 
