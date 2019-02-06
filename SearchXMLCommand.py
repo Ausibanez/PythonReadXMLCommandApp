@@ -1,5 +1,7 @@
-## Useful for parsing DPP XMLCommand grabbing a specific attribute's value
-## and printing it to a line or using it as part of another built string
+## Reads one line at a time from a file containing multiple lines of
+## full xml tags and prints the given attribute's value to a file.
+## Useful for reading values from DPP XMLCommand. Can optionally format the
+## output to the file.
 ##
 ## Example XMLCommand (one line):
 ##
@@ -76,13 +78,16 @@ class SearchXMLCommand(Frame):
             outStr = txtOutput.get()
             if outStr:
                 strLen = len(outStr)
-                tokenPos = outStr.index('##')
+                tokenPos = outStr.index('{#}')
                 strList.append(outStr[:tokenPos])
-                strList.append(outStr[tokenPos+2:strLen])                
+                strList.append(outStr[tokenPos+3:strLen])
                 return strList
         except Exception as e:
-            msg = 'Parse output text error: ' + str(e) + '\n'
+            msg = 'Error in output text: ' + str(e) + '\n'
             self.logError(scroll_widget, msg)
+            self.logError(scroll_widget, 'Verify the {0} token is included'
+                + ' as this is used to set the location of the attribute value'
+                + ' in the output')
 
     def main(self, scroll_widget, xml_tag, txtOutput):
         xml_file_name = self.choose_xml_file()
@@ -94,16 +99,17 @@ class SearchXMLCommand(Frame):
                 try:
                     with open(xml_file_name) as inFile:
                         output_file_name = self.choose_save_file()
-                        strList = self.parseOutputText(scroll_widget, txtOutput)
                         if output_file_name:
-                            self.logInfo(scroll_widget, 'Output file is ' + output_file_name + '\n')
-                            with open(output_file_name, "w") as outFile:
-                                for line in self.read_nonblank_lines(inFile):
-                                    tree = ET.ElementTree(ET.fromstring(line))
-                                    objectname = tree.find(xml_tag.get())
-                                    if objectname is not None:
-                                        outFile.write(strList[0] + objectname.text + strList[1] + '\n')
-                                self.logGood(scroll_widget, 'Done\n')
+                            strList = self.parseOutputText(scroll_widget, txtOutput)
+                            if strList:
+                                self.logInfo(scroll_widget, 'Output file is ' + output_file_name + '\n')
+                                with open(output_file_name, "w") as outFile:
+                                    for line in self.read_nonblank_lines(inFile):
+                                        tree = ET.ElementTree(ET.fromstring(line))
+                                        objectname = tree.find(xml_tag.get())
+                                        if objectname is not None:
+                                            outFile.write(strList[0] + objectname.text + strList[1] + '\n')
+                                    self.logGood(scroll_widget, 'Done\n')
                         else:
                             self.logError(scroll_widget, 'Invalid output file name\n')
                 except Exception as e:
@@ -153,7 +159,7 @@ class SearchXMLCommand(Frame):
         frame.grid_columnconfigure(2, weight=1)
         outText = Entry(frame, textvariable=outputStr)
         outText.config(width=100)
-        outText.insert(0,"The xml tag value is ##")
+        outText.insert(0,"The xml tag value is {#}")
         outText.grid(row=0, column=2, sticky='w', padx=2, pady=2)
         return outText
 
@@ -165,5 +171,5 @@ class SearchXMLCommand(Frame):
 
     def createClearButton(self, scroll, frame):
         frame.grid_columnconfigure(3, weight=1)
-        w = Button(frame, text="Clear", command=lambda: self.clearText(scroll))
+        w = Button(frame, text="Clear log", command=lambda: self.clearText(scroll))
         w.grid(row=0, column=3, sticky='e', padx=2, pady=2)
