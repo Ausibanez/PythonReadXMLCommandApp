@@ -68,25 +68,41 @@ class SearchXMLCommand(Frame):
             if line:
                 yield line
 
+    # Determines where the xml value token is located and stores the
+    # substrings for the output in a list for later
+    def parseOutputText(self, scroll_widget, txtOutput):
+        strList = []
+        try:
+            outStr = txtOutput.get()
+            if outStr:
+                strLen = len(outStr)
+                tokenPos = outStr.index('##')
+                strList.append(outStr[:tokenPos])
+                strList.append(outStr[tokenPos+2:strLen])                
+                return strList
+        except Exception as e:
+            msg = 'Parse output text error: ' + str(e) + '\n'
+            self.logError(scroll_widget, msg)
+
     def main(self, scroll_widget, xml_tag, txtOutput):
         xml_file_name = self.choose_xml_file()
-
         if xml_file_name:
             self.logInfo(scroll_widget, 'XMLCommand file is ' + xml_file_name + '\n')
-            if xml_tag.get():
-                self.logInfo(scroll_widget, 'Retrieving values for tag: ' + xml_tag.get() + '\n')
+            xml_tag_val = xml_tag.get()
+            if xml_tag_val:
+                self.logInfo(scroll_widget, 'Retrieving values for tag: ' + xml_tag_val + '\n')
                 try:
                     with open(xml_file_name) as inFile:
                         output_file_name = self.choose_save_file()
-
+                        strList = self.parseOutputText(scroll_widget, txtOutput)
                         if output_file_name:
                             self.logInfo(scroll_widget, 'Output file is ' + output_file_name + '\n')
                             with open(output_file_name, "w") as outFile:
                                 for line in self.read_nonblank_lines(inFile):
                                     tree = ET.ElementTree(ET.fromstring(line))
                                     objectname = tree.find(xml_tag.get())
-                                    # Hard-coded output format. Should make this configurable
-                                    outFile.write("insert into gasQualityDefine_21aug2018 select '" + objectname.text + "'\n")
+                                    if objectname is not None:
+                                        outFile.write(strList[0] + objectname.text + strList[1] + '\n')
                                 self.logGood(scroll_widget, 'Done\n')
                         else:
                             self.logError(scroll_widget, 'Invalid output file name\n')
@@ -137,7 +153,7 @@ class SearchXMLCommand(Frame):
         frame.grid_columnconfigure(2, weight=1)
         outText = Entry(frame, textvariable=outputStr)
         outText.config(width=100)
-        outText.insert(0,"insert into gasQualityDefine_5feb2019 select")
+        outText.insert(0,"The xml tag value is ##")
         outText.grid(row=0, column=2, sticky='w', padx=2, pady=2)
         return outText
 
