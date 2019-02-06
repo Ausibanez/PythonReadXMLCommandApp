@@ -17,6 +17,7 @@ import os
 class SearchXMLCommand:
 
     def __init__(self, parent):
+        # Frame setup start
         frameTop = Frame(parent)
         frameTop.grid(row=0, column=0, sticky=E+W)
         frameBottom = Frame(parent)
@@ -25,6 +26,8 @@ class SearchXMLCommand:
         parent.rowconfigure(1, weight=1)
         frameBottom.rowconfigure(0, weight=1)
         frameBottom.columnconfigure(0, weight=1)
+        # Frame setup end
+        # Create frame contents
         scrolltxt = self.createScrolledText(frameBottom)
         xml_tag = self.createXMLTagEntry(frameTop)
         txtOutput = self.createFormattedOutputEntry(frameTop)
