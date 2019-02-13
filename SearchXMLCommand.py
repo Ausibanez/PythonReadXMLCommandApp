@@ -14,7 +14,7 @@ from tkinter import *
 from tkinter import scrolledtext
 import os
 
-class SearchXMLCommand:
+class SearchXMLCommand():
 
     def __init__(self, parent):
         # Frame setup start
@@ -78,16 +78,18 @@ class SearchXMLCommand:
 
     # Determines where the xml value token is located and stores the
     # substrings for the output in a list for later
+    # Currently only supports one token
     def parseOutputText(self, scroll_widget, txtOutput):
         strList = []
         try:
             outStr = txtOutput.get()
-            if outStr:
-                strLen = len(outStr)
-                tokenPos = outStr.index('{#}')
-                strList.append(outStr[:tokenPos])
-                strList.append(outStr[tokenPos+3:strLen])
-                return strList
+            if not outStr:
+                outStr = '{#}'
+            strLen = len(outStr)
+            tokenPos = outStr.index('{#}')
+            strList.append(outStr[:tokenPos])
+            strList.append(outStr[tokenPos+3:strLen])
+            return strList
         except Exception as e:
             msg = 'Error in output text: ' + str(e) + '\n'
             self.logError(scroll_widget, msg)
